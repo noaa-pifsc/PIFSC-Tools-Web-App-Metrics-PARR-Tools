@@ -1,0 +1,1 @@
+This file is required for the docker container logs volume 

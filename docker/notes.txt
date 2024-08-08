@@ -1,0 +1,58 @@
+cd C:\Users\jesse.abdul\Documents\Version Control\Git\web-app-metrics\docker
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d  --build
+
+# leave docker container running
+docker run -d pifsc/web-app-metrics:latest tail -f /dev/null
+
+
+docker exec -it -d pifsc/web-app-metrics:latest bash
+
+to do:
+	** X look into waiting strategy when the action has a page reload (same elements, checking to wait until an element is there is no different than the first page load)
+
+	X waiting strategy may not be sufficient (it may stop as soon as an element is finished rendering, for instance the login logo was not included in the initial page load but it may not have downloaded before the username field was shown)
+		look into fluent wait: https://www.browserstack.com/guide/wait-commands-in-selenium-webdriver
+
+		https://www.reddit.com/r/selenium/comments/8qlq38/how_to_refresh_a_page_and_wait_for_elements_to_be/
+			differentiating between a refresh and the page not being reloaded yet
+			https://stackoverflow.com/questions/46968770/python-selenium-wait-until-an-element-is-no-longer-stale
+			
+			
+	X refactor code to separate out functions
+	
+	X build out the rest of the tests
+	
+	X  update the selectors to use something more flexible than the attribute ID value
+	
+	
+
+
+7/24:
+Google Chrome 127.0.6533.72
+
+tests:
+	X Login page
+	
+	X Login process
+	
+	X Load pages from links
+	
+	X Take screenshots after each action?
+	
+	X Enter a DB record
+
+	X Export data to .csv files
+	
+	X CSV:
+		X Page Name, action (page load/refresh/login), total file size, total time before page is ready
+		
+		Total Wait Time? 
+		
+
+Resources for selenium/google chrome:
+	https://katekuehl.medium.com/installation-guide-for-google-chrome-chromedriver-and-selenium-in-a-python-virtual-environment-e1875220be2f
+
+	https://github.com/password123456/setup-selenium-with-chrome-driver-on-ubuntu_debian
+
+	
+	latest OIC (https://www.oracle.com/database/technologies/instant-client.html) and compatable ODBC (https://docs.posit.co/pro-drivers/documentation/)

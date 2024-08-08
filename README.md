@@ -1,93 +1,81 @@
-# Selenium Web Tests
+# Web Application Metrics
 
+## Overview
+The Web Application Metrics (WAM) project was developed to provide an automated method to capture performance metrics from the user perspective for a suite of web actions on a given web app.  The web actions can be customized for any web application and can be executed in a variety of scenarios for flexibility.  The WAM project utilizes a docker container to execute the actions with [Selenium WebDriver](https://www.selenium.dev/documentation/webdriver/).
 
+## Resources
+-   WAM Version Control Information:
+    -   URL: git@picgitlab.nmfs.local:centralized-data-tools/web-app-metrics.git
+    -   Version: 1.0 (Git tag: web_app_metrics_v1.0)
 
-## Getting started
+## Scenarios
+-   There are three different scenarios implemented by the docker project:
+    -   Local - this scenario deploys the docker container to a local docker host and connects to a local web app
+    -   Remote - this scenario deploys the docker container to a remote docker host and connects to a remote web app
+    -   Hybrid - this scenario deploys the docker container to a local docker host and connects to a remote web app
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Setup Procedure
+-   ### Standalone Implementation
+    -   \*Note: this implementation option is provided for standalone execution, where this repository is cloned and prepared for deployment and the user updates the appropriate files below and builds/runs the container  
+    -   Clone the WAM repository to a working directory
+    -   Update the bash script deployment configuration file ([project_deploy_config.sh](./docker/src/sh_scripts/config/project_deploy_config.sh)) with the appropriate values:
+        -   project_path is the folder name of the working copy of the repository that will be used to build the container
+        -   git_url is the project git URL value
+    -   Execute the appropriate docker preparation script stored in the [deployment_scripts](./deployment_scripts) folder to prepare the docker container for deployment in a new working directory
+        -   For example use the [prepare_docker_project.local.sh](./deployment_scripts/prepare_docker_project.local.sh) bash script to prepare the Local docker container for deployment in the c:/docker/web-app-metrics-local folder
+    -   Optional updates:
+        -   Update the docker compose runtime configuration file (e.g. c:/docker/web-app-metrics-local/docker/docker-compose.prod.yml) to specify repository-specific the volume names and container name
+        -   Update the docker compose configuration file (e.g. c:/docker/web-app-metrics-local/docker/docker-compose.yml) to specify the volume names and image/container names for the forked project
+    -   Update the login_credentials.py file in the appropriate new working directory to specify the username and password for the given web application (e.g. c:/docker/web-app-metrics-local/docker/py_scripts/lib/login_credentials.py) for the local scenario
+        -   \*\*Note: Do not commit the login credentials for the given web application in the repository for security reasons
+    -   Update the app_config.py file in the appropriate new working directory to specify the configuration values for the given web application (e.g. c:/docker/web-app-metrics-local/docker/py_scripts/lib/app_config.py) for the local scenario, comments are defined in the configuration file to describe the configuration variables that should be defined.
+    -   Update the [app.py](./docker/src/py_scripts/app.py) to define the web actions to execute for the given web app, to capture the elapsed time for each web action, and log the standard metrics in the defined .csv file.
+        -   There is a block comment defined in app.py that indicates where the custom code should be defined for a given web app
+-   ### Forked Repository Implementation
+    -   \*Note: this repository can be forked for a specific database instance/schema to make it easier to build and deploy the container to capture metrics for a given database instance/schema.
+        -   [WAM - IBBS](https://picgitlab.nmfs.local/web-metrics/ibbs-web-app-metrics) is provided as an example of how to implement the forked database-specific repository
+    -   Update the [app_config.py](./docker/src/py_scripts/lib/app_config.py) file to specify the configuration values for the given web application, comments are defined in the configuration file to describe the configuration variables that should be defined.
+    -   Update the [app.py](./docker/src/py_scripts/app.py) to define the web actions to execute for the given web app, to capture the elapsed time for each web action, and log the standard metrics in the defined .csv file.
+        -   There is a block comment defined in app.py that indicates where the custom code should be defined for a given web app
+    -   Update the bash script deployment configuration file [project_deploy_config.sh](./docker/src/sh_scripts/config/project_deploy_config.sh) to specify the appropriate values:
+        -   project_path is the folder name of the working copy of the repository that will be used to build the container
+        -   git_url is the project git URL value
+    -   Update the [README.md](./README.md) file to change the volume names, document title heading, and setup procedure accordingly
+    -   Update the docker compose runtime configuration file [docker-compose.prod.yml](./docker/docker-compose.prod.yml) to specify repository-specific the volume names and container name
+    -   Update the docker compose configuration file [docker-compose.yml](./docker/docker-compose.yml) to specify the volume names and image/container names for the forked project
+    -   Commit the changes to the forked repository
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Building/Running Container (Standalone Implementation Only)
+-   Execute the appropriate build and deploy script for the given scenario (e.g. [build_deploy_project.remote.sh](./deployment_scripts/build_deploy_project.remote.sh) for the remote scenario)
 
-## Add your files
+## Docker Application Processing
+-   The [app.py](./docker/src/py_scripts/app.py) python script will execute when the container is executed
+    -   The script will check the active project_scenario_config.sh file to determine if this is a local, remote, or hybrid scenario.    
+        -   The active project_scenario_config.py file will be determined by which docker preparation script is executed (e.g. [project_scenario_config.local.sh](./docker/src/py_scripts/lib/project_scenario_config.local.py) for the [prepare_docker_project.local.sh](./deployment_scripts/prepare_docker_project.local.sh) preparation script)
+    -   The python script will open a web browser on the container app to the specified web url:
+        -   if the runtime value of app_location is "remote" then the app navigates to the remote_web_url before executing the defined web actions
+        -   if the runtime value of app_location is "local" then the app navigates to the local_web_url before executing the defined web actions
+    -   Next, the script will execute all of the web actions defined in the [app.py](./docker/src/py_scripts/app.py) python script
+         -   The performance metrics will be saved to a comma-delimited file with a name of the csv_output_file variable value defined in [app_config.py](./docker/src/py_scripts/lib/app_config.py) in the data volume (defined in [docker-compose.prod.yml](./docker/docker-compose.prod.yml))
+        -   All log messages generated by the container app will be appended to a log file with a name of the log_file_prefix variable value defined in [app_config.py](./docker/src/py_scripts/lib/app_config.py) in the logs volume (defined in [docker-compose.prod.yml](./docker/docker-compose.prod.yml)), the log file name will be appended with the date in YYYYMMDD format with a ".log" file extension.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Checking Results
+-   Open the docker volume web-app-metrics-logs to view the log files for the different executions of the docker container
+-   Open the docker volume web-app-metrics-data to view the exported data files for the different queries
+    -   Open the file that with a file name defined in the csv_output_file variable value defined in [app_config.py](./docker/src/py_scripts/lib/app_config.py) in the data volume (defined in [docker-compose.prod.yml](./docker/docker-compose.prod.yml)) to view the metrics that were captured for each web action
 
-```
-cd existing_repo
-git remote add origin https://picgitlab.nmfs.local/centralized-data-tools/selenium-web-tests.git
-git branch -M main
-git push -uf origin main
-```
+## Standard Metrics/Information Logging
+-   The following metrics and information is captured for each web action in a .csv file:
+    -   App Name - The name of the web application being evaluated (defined in the app_name variable defined in [app_config.py](./docker/src/py_scripts/lib/app_config.py))
+    -   Metrics App Location - The location of this Web App Metrics docker app the metrics will be captured by (defined in container_location of the active project_scenario_config.py file for the given scenario - e.g. [project_scenario_config.remote.py](./docker/src/py_scripts/lib/project_scenario_config.remote.py) for the remote scenario)
+    -   Web App Location - The location of the Web App the metrics will be captured from (defined in app_location of the active project_scenario_config.py file for the given scenario - e.g. [project_scenario_config.remote.py](./docker/src/py_scripts/lib/project_scenario_config.remote.py) for the remote scenario)
+    -   Date/Time - The Date/Time the given web action was started in MM/DD/YYYY HH:MI:SS AM/PM format
+    -   Page Name - The title tag from the page the web action was executed on
+    -   Action - The type of web action
+    -   # Files - The total number of web resource files (e.g. image, css, JavaScript file, etc.) downloaded for the given web action
+    -   Total File Size (KB) - The total size in kilobytes of the web resource files downloaded for the given web action
+    -   Total Response Time (s) - The total number of seconds for the web action to complete and the app is ready to accept user interactions
+    -   Screenshot file name - the name of the screenshot file saved in the data volume for the given web action
 
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://picgitlab.nmfs.local/centralized-data-tools/selenium-web-tests/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## Implemented Web Actions
+-   \*Note: This depends on the web app that the actions are being executed on, see [WAM - IBBS](https://picgitlab.nmfs.local/web-metrics/ibbs-web-app-metrics) as an example of the web actions that are implemented in the IBBS app
