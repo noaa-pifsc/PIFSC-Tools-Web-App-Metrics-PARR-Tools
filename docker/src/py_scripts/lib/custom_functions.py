@@ -147,7 +147,7 @@ def wait_for_response (stale_element, clickable_element_id, start_timer, driver,
             EC.staleness_of(stale_element) #This is a select element that is used to refresh the page
             )
 
-        log_value("The stale element was found, wait for the clickable element", print_log_messages)
+            log_value("The stale element was found, wait for the clickable element", print_log_messages)
         
         # wait until the login username field is clickable:
         elem = WebDriverWait(driver, 30).until(
