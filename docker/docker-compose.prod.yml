@@ -1,10 +1,10 @@
 services:
-  web-app-metrics:
+  parr-tools-web-app-metrics:
     volumes:
-      - "web-app-metrics-data:/app/data"
-      - "web-app-metrics-logs:/app/logs"
+      - "parr-tools-web-app-metrics-data:/app/data"
+      - "parr-tools-web-app-metrics-logs:/app/logs"
     environment:
       TZ: "Pacific/Honolulu"
 volumes:
-  web-app-metrics-data:
-  web-app-metrics-logs:
+  parr-tools-web-app-metrics-data:
+  parr-tools-web-app-metrics-logs:
