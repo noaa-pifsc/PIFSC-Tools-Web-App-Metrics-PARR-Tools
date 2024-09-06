@@ -5,13 +5,13 @@ The Public Access to Research Results (PARR) Tools Web Application Metrics (WAM)
 
 ## Resources
 -   PARR Tools WAM Version Control Information:
-    -   URL: https://github.com/noaa-pifsc/PIFSC-Tools-Web-App-Metrics-PARR-Tools
+    -   URL: git@github.com:noaa-pifsc/PIFSC-Tools-Web-App-Metrics-PARR-Tools.git
     -   Version: 1.0 (Git tag: parr_tools_web_app_metrics_v1.0)
     -   Forked repository (upstream)
         -   [Web App Metrics README](https://github.com/noaa-pifsc/PIFSC-Tools-Web-App-Metrics/blob/main/README.md)
         -   WAM Version Control Information:
-    -   URL: git@github.com:noaa-pifsc/PIFSC-Tools-Web-App-Metrics.git
-    -   Version: 1.4 (Git tag: web_app_metrics_v1.4)
+            -   URL: git@github.com:noaa-pifsc/PIFSC-Tools-Web-App-Metrics.git
+            -   Version: 1.4 (Git tag: web_app_metrics_v1.4)
 
 ## Scenarios
 -   There are three different scenarios implemented by the docker project:
