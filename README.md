@@ -1,5 +1,10 @@
 # PARR Tools - Web Application Metrics
 
+## Notice
+- This repository has been archived and is no longer maintained.
+- The code is provided for historical reference and may contain unpatched or unknown vulnerabilities.
+- It should not be used in production systems.
+
 ## Overview
 The Public Access to Research Results (PARR) Tools Web Application Metrics (WAM) project was developed to provide an automated method to capture performance metrics from the user perspective for a suite of web actions on the PARR Tools web app.  The PARR Tools WAM project can be executed in a variety of scenarios for flexibility.  This project is forked from the [Web App Metrics](https://github.com/noaa-pifsc/PIFSC-Tools-Web-App-Metrics) and customized for the PARR Tools web app.  
 
